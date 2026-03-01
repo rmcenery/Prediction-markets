@@ -1,0 +1,37 @@
+name: Deploy to Production (Self-Hosted)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Pull latest changes
+        run: git pull origin main
+
+      - name: Build Docker images
+        run: docker compose build
+
+      - name: Restart services
+        run: docker compose up -d
+
+      - name: Show status
+        run: docker compose ps
+
+      - name: Health check
+        run: |
+          sleep 5
+          curl -f http://localhost:3001/health || exit 1
+
+      - name: Clean up old images
+        run: docker image prune -f
+
+      - name: Deployment complete
+        run: echo "✅ Deployment successful!"
