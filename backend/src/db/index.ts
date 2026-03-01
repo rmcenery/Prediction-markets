@@ -7,7 +7,7 @@ import {
   WatchlistEntry,
   Wallet,
   DetectionConfig,
-} from '../../../shared/types';
+} from '../../shared/types';
 
 const DB_PATH = process.env.DB_PATH || path.join(process.cwd(), 'data', 'tracker.db');
 

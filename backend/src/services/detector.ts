@@ -1,4 +1,4 @@
-import { Market, Trade, Wallet, ScoringResult, SuspicionSignal, DetectionConfig } from '../../../shared/types';
+import { Market, Trade, Wallet, ScoringResult, SuspicionSignal, DetectionConfig } from '../../shared/types';
 import { getRecentTradeSizes } from '../db';
 
 /**

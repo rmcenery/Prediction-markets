@@ -1,0 +1,40 @@
+# Git
+.git
+.gitignore
+
+# Node
+node_modules
+npm-debug.log
+
+# Environment
+.env
+.env.local
+
+# Python (old files)
+*.pyc
+__pycache__
+*.py
+
+# Build output
+dist
+build
+.vite
+
+# Data
+*.db
+*.db-shm
+*.db-wal
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs

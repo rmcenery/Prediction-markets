@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import * as db from './db';
 import { PolymarketClient } from './services/polymarket-client';
 import { scoreTrade, isSuspicious } from './services/detector';
-import { Market, Trade } from '../../shared/types';
+import { Market, SuspicionSignal } from '../shared/types';
 // import { // broadcastEvent } from './server'; // Commented out to avoid port conflict
 
 dotenv.config();
@@ -97,11 +97,11 @@ async function main() {
           marketId: market.id,
           question: market.question,
           score,
-          signals: signals.map((s) => s.description),
+          signals: signals.map((s: SuspicionSignal) => s.description),
           firedAt: new Date().toISOString(),
         };
 
-        const alertId = db.insertAlert(alert);
+        db.insertAlert(alert);
         console.log('\n' + '='.repeat(60));
         console.log('  *** SUSPICIOUS TRADE DETECTED ***');
         console.log('='.repeat(60));

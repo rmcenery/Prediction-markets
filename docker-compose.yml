@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  # Backend API Server
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: polymarket-backend
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./backend/data:/app/data
+      - ./shared:/app/shared:ro
+    environment:
+      - NODE_ENV=production
+      - DB_PATH=/app/data/tracker.db
+      - PORT=3001
+    networks:
+      - polymarket-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Background Worker
+  worker:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.worker
+    container_name: polymarket-worker
+    restart: unless-stopped
+    volumes:
+      - ./backend/data:/app/data
+      - ./shared:/app/shared:ro
+    environment:
+      - NODE_ENV=production
+      - DB_PATH=/app/data/tracker.db
+    networks:
+      - polymarket-network
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: polymarket-frontend
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    networks:
+      - polymarket-network
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Cloudflare Tunnel (optional - for internet access)
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: polymarket-tunnel
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    networks:
+      - polymarket-network
+    depends_on:
+      - frontend
+    profiles:
+      - tunnel
+
+networks:
+  polymarket-network:
+    driver: bridge
+
+volumes:
+  db-data:

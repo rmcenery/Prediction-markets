@@ -6,7 +6,7 @@ import {
   PolymarketTradeResponse,
   Trade,
   Wallet,
-} from '../../../shared/types';
+} from '../../shared/types';
 
 const GAMMA_BASE = 'https://gamma-api.polymarket.com';
 const DATA_BASE = 'https://data-api.polymarket.com';

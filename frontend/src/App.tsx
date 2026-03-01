@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './com
 import { Badge } from './components/ui/badge'
 import { formatDate, formatNumber, getScoreColor } from './lib/utils'
 
-const API_BASE = 'http://localhost:3001'
+const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:3001' : '')
 
 interface DashboardStats {
   totalAlerts: number
@@ -74,7 +74,9 @@ function App() {
 
   // WebSocket for real-time updates
   useEffect(() => {
-    const ws = new WebSocket('ws://localhost:3001')
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+    const wsUrl = import.meta.env.VITE_WS_URL || (import.meta.env.DEV ? 'ws://localhost:3001' : `${protocol}//${window.location.host}/ws`)
+    const ws = new WebSocket(wsUrl)
 
     ws.onopen = () => {
       console.log('[ws] Connected to backend')

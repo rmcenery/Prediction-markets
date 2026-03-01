@@ -4,7 +4,7 @@ import http from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
 import dotenv from 'dotenv';
 import * as db from './db';
-import { WSEvent, PaginatedResponse } from '../../shared/types';
+import { WSEvent, PaginatedResponse } from '../shared/types';
 
 dotenv.config();
 
