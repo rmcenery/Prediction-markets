@@ -1,0 +1,36 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script: |
+            cd ~/Prediction-markets
+
+            # Pull latest code
+            git pull origin main
+
+            # Rebuild and restart services
+            docker compose build
+            docker compose up -d
+
+            # Show status
+            docker compose ps
+
+            # Clean up old images
+            docker image prune -f
+
+            echo "✅ Deployment complete!"
